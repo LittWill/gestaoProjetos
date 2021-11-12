@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout.html}">
+
+<head>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
+    <script>
+        $(function () {
+            $("#calendario").datepicker({
+                minDate: 0, maxDate: "+1M +10D +5Y",
+                dateFormat: 'dd/mm/yy',
+                dayNames: ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'],
+                dayNamesMin: ['D', 'S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+                dayNamesShort: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+                monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+                monthNamesShort: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                changeMonth: true,
+                changeYear: true,
+                showOtherMonths: true,
+                selectOtherMonths: true
+            });
+
+            $("#anim").on("change", function () {
+                $("#calendario").datepicker("option", "showAnim", $(this).val());
+            });
+        });
+    </script>
+</head>
+<div layout:fragment="content">
+
+    <div class="alert alert-primary" th:if="${mensagem != null}" th:text="${mensagem}"></div>
+
+    <div class="card">
+        <div class="card-header">
+            <p class="text-primary">Novo Projeto</p>
+        </div>
+
+        <div class="card-body">
+            <form method="POST" th:object="${projeto}" th:action="@{/projetos/editar}">
+                <input type="hidden" th:field="*{id}"></input>
+
+                <div class="form-group mb-3">
+                    <label for="nome">Nome do Projeto:</label>
+                    <input class="form-control" type="text" th:field="*{nome}" required></input>
+                    <div class="text-danger" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="sigla">Apelido:</label>
+                    <input class="form-control" type="text" th:field="*{apelido}" required></input>
+                    <div class="text-danger" th:if="${#fields.hasErrors('apelido')}" th:errors="*{apelido}"></div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="linguagem">Linguagem associada:</label>
+                    <select class="form-select" th:field="*{linguagem}">
+                        <option th:each="linguagem: ${linguagens}" th:value="${linguagem.id}"
+                            th:text="${linguagem.nome}">
+                        </option>
+                    </select>
+                </div>
+
+
+                <div class="form-group mb-3">
+                    <label for="dataEntrega">Data de entrega: </label>
+                    <input class="form-control" type="text" id="calendario" th:field="*{dataEntrega}"></input>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="orcamento">Orçamento:</label>
+                    <input class="form-control" step="5.00" min="0.00" type="number" th:field="*{orcamento}"
+                        required></input>
+                    <div class="text-danger" th:if="${#fields.hasErrors('orcamento')}" th:errors="*{orcamento}"></div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <p>Desenvolvedores do Projeto:</p>
+                    <div th:if="${not #lists.isEmpty(desenvolvedores)}">
+
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Alocado</th>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Sigla</th>
+                                    <th>Linguagem</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="desenvolvedor : ${desenvolvedores}">
+                                    <td style="width: 5%; text-align: center; "><input class="form-check-input"
+                                            type="checkbox" th:id="${desenvolvedor}" th:value="${desenvolvedor.id}"
+                                            th:field="*{desenvolvedores}" /></td>
+
+                                    <td style="width: 5%;" th:text="${desenvolvedor.id}"></td>
+
+                                    <td th:text="${desenvolvedor.nome}"></td>
+
+                                    <td th:text="${desenvolvedor.siglaNome}"></td>
+
+                                    <td th:text="${desenvolvedor.linguagem.nome}"></td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar Projeto</button>
+        </div>
+        
+        </form>
+
+    </div>
+    
+</div>
+
+
+</div>
+
+
+</html>
